@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 meval = "0.2"
+plotters = "0.3.1"
