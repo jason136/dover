@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+	<meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Dover</title>
+	<link rel="stylesheet" href="./style.css">
+    </head>
+    <body>
+        <noscript>This page contains webassembly and javascript content, please enable javascript in your browser.</noscript>
+        <script src="./bootstrap.js"></script>
+	<main>
+	    <h1>Dover</h1>
+	    <div id="coord"></div>
+        <canvas id="canvas" width="600" height="400"></canvas>
+	    <div id="status">Loading WebAssembly...</div>
+	    <div id="control">
+			<label for="plot-type">Demo: </label>
+
+      <form id="form">
+        <div class="form-control">
+          <label for="dxdt">dx/dt:</label>
+          <input type="text" id="dxdt" name="dxdt">
+          <label for="dydt">dy/dt:</label>
+          <input type="text" id="dydt" name="dydt">
+        </div>
+        <div class="form-control">
+          <label for="initial_x">initial x:</label>
+          <input type="text" id="initial_x" name="initial_x">
+          <label for="initial_y">initial y:</label>
+          <input type="text" id="initial_y" name="initial_y">
+        </div>
+        <div class="form-control">
+          <label for="delta_t">delta x:</label>
+          <input type="text" id="delta_t" name="delta_t">
+          <label for="iter">iterations:</label>
+          <input type="text" id="iter" name="iter">
+        </div>
+        
+        <button class="btn" type="submit">Calculate</button>
+      </form>
+    </div>
+	</main>
+	<footer>
+	    <a href="https://github.com/jason136/dover" target="a">Source</a> |
+	</footer>
+    </body>
+</html>
