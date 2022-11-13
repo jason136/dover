@@ -1,22 +1,34 @@
 class Chart {}
+let euler = () => {};
+let runge_kutta = () => {};
 
 const canvas = document.getElementById("canvas");
 const coord = document.getElementById("coord");
 const plotType = document.getElementById("plot-type");
 const status = document.getElementById("status");
+let chart;
 
 const form = document.getElementById('form');
 form.addEventListener('submit', updatePlot);
 
-let chart = null;
-
-export function setup(WasmChart) {
+export function setup(WasmChart, WasmEuler, WasmRK) {
     Chart = WasmChart;
+    euler = WasmEuler;
+    runge_kutta = WasmRK;
 }
 
 export function main() {
     setupUI();
-    setupCanvas();
+
+    chart = Chart.new(canvas);
+    document.getElementById("dxdt").value = "10*x-x*y";
+    document.getElementById("dydt").value = "-0.1*y+x*y";
+    document.getElementById("x_initial").value = "15";
+    document.getElementById("y_initial").value = "15";
+    document.getElementById("delta_t").value = "0.001";
+    document.getElementById("t_final").value = "500";
+
+    // setupCanvas();
 }
 
 function setupUI() {
@@ -30,15 +42,15 @@ function setupUI() {
     // window.addEventListener("mousemove", onMouseMove);
 }
 
-function setupCanvas() {
-	const dpr = window.devicePixelRatio || 1.0;
-    const aspectRatio = canvas.width / canvas.height;
-    const size = canvas.parentNode.offsetWidth * 0.8;
-    canvas.style.width = size + "px";
-    canvas.style.height = size / aspectRatio + "px";
-    canvas.width = size;
-    canvas.height = size / aspectRatio;
-}
+// function setupCanvas() {
+// 	const dpr = window.devicePixelRatio || 1.0;
+//     const aspectRatio = canvas.width / canvas.height;
+//     const size = canvas.parentNode.offsetWidth * 0.8;
+//     canvas.style.width = size + "px";
+//     canvas.style.height = size / aspectRatio + "px";
+//     canvas.width = size;
+//     canvas.height = size / aspectRatio;
+// }
 
 
 
@@ -49,22 +61,28 @@ function updatePlot(event) {
     const formDataObj = Object.fromEntries(formData.entries());
 
     status.innerText = `Rendering...`;
-    chart = null;
+
     const start = performance.now();
 	
-    const result = Chart.euler(
-        canvas, 
+    euler(
+        chart, 
         formDataObj.dxdt, 
         formDataObj.dydt,
-        formDataObj.initial_x,
-        formDataObj.initial_y,
+        formDataObj.x_initial,
+        formDataObj.y_initial,
         0.0, 
         formDataObj.delta_t,
-        formDataObj.iter,
+        formDataObj.t_final,
     );
-
-    console.log(result);
+    let end = performance.now();
+    console.log(`Calculated in ${Math.ceil(end - start)}ms`)
+    chart.generate_bounds();
+    end = performance.now();
+    console.log(`Bounds Generated in ${Math.ceil(end - start)}ms`)
+    chart.draw();
+    end = performance.now();
+    console.log(`Drawn in ${Math.ceil(end - start)}ms`)
 	
-    const end = performance.now();
+    end = performance.now();
     status.innerText = `Rendered in ${Math.ceil(end - start)}ms`;
 }
