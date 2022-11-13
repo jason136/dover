@@ -7,8 +7,8 @@
     "create-wasm-app": ".bin/create-wasm-app.js"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.js",
-    "start": "cd .. && wasm-pack build && cd www && webpack-dev-server"
+    "build": "cd .. && wasm-pack build --release && cd pkg && wasm-opt -O3 -o dover_bg.wasm dover_bg.wasm && cd .. && cd www && webpack --config webpack.config.js",
+    "start": "cd .. && wasm-pack build --release && cd pkg && wasm-opt -O3 -o dover_bg.wasm dover_bg.wasm && cd .. && cd www && webpack-dev-server"
   },
   "repository": {
     "type": "git",

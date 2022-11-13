@@ -8,25 +8,23 @@ use meval::Expr;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
+// #[wasm_bindgen]
+// extern "C" {
+//     #[wasm_bindgen(js_namespace = console)]
+//     fn log(s: &str);
 
-    #[wasm_bindgen(js_namespace = console, js_name = log)]
-    fn log_u32(a: u32);
+//     #[wasm_bindgen(js_namespace = console, js_name = log)]
+//     fn log_u32(a: u32);
 
-    #[wasm_bindgen(js_namespace = console, js_name = log)]
-    fn log_many(a: &str, b: &str);
-}
+//     #[wasm_bindgen(js_namespace = console, js_name = log)]
+//     fn log_many(a: &str, b: &str);
+// }
 
 fn input_function(input: String) -> Result<impl Fn(f64, f64)-> f64, JsError> {
     let expression: Expr = input.trim().parse()?;
     let function = expression.bind2("x", "y")?;
     Ok(function)
 }
-
-
 
 #[wasm_bindgen]
 pub struct Chart {
@@ -51,11 +49,14 @@ impl Chart {
         }
     }
 
-    pub fn set_bounds(&mut self, x_max: f64, x_min: f64, y_max: f64, y_min: f64) {
-        self.x_max = x_max;
-        self.x_min = x_min;
-        self.y_max = y_max;
-        self.y_min = y_min;
+    pub fn adjust_bounds(&mut self, left: f64, right: f64, top: f64, bottom: f64) {
+        let width = (self.x_max - self.x_min).abs();
+        let height = (self.y_max - self.y_min).abs();
+
+        self.x_max = self.x_max + width * right;
+        self.x_min = self.x_min - width * left;
+        self.y_max = self.y_max + height * top;
+        self.y_min = self.y_min - height * bottom;
     }
 
     pub fn generate_bounds(&mut self) {
@@ -77,14 +78,10 @@ impl Chart {
         t_max = f64::min(t_max + (t_max - t_min) * 0.1, f64::MAX);
         t_min = f64::max(t_min - (t_max - t_min) * 0.1, f64::MIN);
 
-        log(format!("x_max: {} x_min: {} y_max: {} y_min: {}", t_max, t_min, f64::max(x_max, y_max), f64::min(x_min, y_min)).as_str());
-
-        self.set_bounds(
-            t_max, 
-            t_min,
-            f64::max(x_max, y_max), 
-            f64::min(x_min, y_min),
-        );
+        self.x_max = t_max;
+        self.x_min = t_min;
+        self.y_max = f64::max(x_max, y_max);
+        self.y_min = f64::min(x_min, y_min);
     }
 
     pub fn draw(&self) -> Result<(), JsError> {        
@@ -96,21 +93,18 @@ impl Chart {
             .margin(20u32)
             .x_label_area_size(30u32)
             .y_label_area_size(30u32)
-            .caption("Chart Name", ("sans-serif", 50))        
+            // .caption("Chart Name", ("sans-serif", 50))        
             .build_cartesian_2d(self.x_min..self.x_max, self.y_min..self.y_max)?;
         
         chart.configure_mesh().x_labels(3).y_labels(3).draw()?;
 
         let x_points: Vec<(f64, f64)> = self.points.iter().cloned().map(|p| (p.0, p.1)).collect();
         let y_points: Vec<(f64, f64)> = self.points.iter().cloned().map(|p| (p.0, p.2)).collect();
-
-        // log(format!("{:?}", x_points).as_str());
-        // log(format!("{:?}", y_points).as_str());
     
         chart.draw_series(std::iter::once(PathElement::new(x_points, &RED)))?;
         chart.draw_series(std::iter::once(PathElement::new(y_points, &BLUE)))?;
         root.present()?;
-            
+
         Ok(())
     }
 }
@@ -125,7 +119,7 @@ pub fn euler(
     t_initial: f64,
     delta_t: f64,
     t_final: f64,
-) -> Result<(), JsError> {
+) -> Result<usize, JsError> {
     let mut x = x_initial;
     let mut y = y_initial;
     let mut t = t_initial;
@@ -152,16 +146,15 @@ pub fn euler(
             y_next = f64::MAX;
         }
 
-        // log(format!("x: {} y: {}", x_next, y_next).as_str());
-
         points.push((t, x_next, y_next));
         x = x_next;
         y = y_next;
     }
 
+    let len = points.len();
     chart.points = Box::new(points);
 
-    Ok(())
+    Ok(len)
 }
 
 #[wasm_bindgen]
@@ -172,9 +165,9 @@ pub fn runge_kutta(
     x_initial: f64, 
     y_initial: f64,
     t_initial: f64,
-    t_final: f64,
     delta_t: f64,
-) -> Result<(), JsError> {
+    t_final: f64,
+) -> Result<usize, JsError> {
     let mut x = x_initial;
     let mut y = y_initial;
     let mut t = t_initial;
@@ -215,7 +208,8 @@ pub fn runge_kutta(
         y = y_next;
     }
     
+    let len = points.len();
     chart.points = Box::new(points);
 
-    Ok(())
+    Ok(len)
 }

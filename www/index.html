@@ -1,48 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-	<meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Dover</title>
-	<link rel="stylesheet" href="./style.css">
-    </head>
-    <body>
-        <noscript>This page contains webassembly and javascript content, please enable javascript in your browser.</noscript>
-        <script src="./bootstrap.js"></script>
-	<main>
-	    <h1>Dover</h1>
-	    <div id="coord"></div>
-        <canvas id="canvas" width="600" height="400"></canvas>
-	    <div id="status">Loading WebAssembly...</div>
-	    <div id="control">
-			<label for="plot-type">Demo: </label>
+  <head>
+    <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dover</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <noscript>This page contains webassembly and javascript content, please enable javascript in your browser.</noscript>
+    <script src="./bootstrap.js"></script>
+    <main>
+      <div id="status">Loading WebAssembly...</div>
 
-      <form id="form">
-        <div class="form-control">
-          <label for="dxdt">dx/dt:</label>
-          <input type="text" id="dxdt" name="dxdt">
-          <label for="dydt">dy/dt:</label>
-          <input type="text" id="dydt" name="dydt">
-        </div>
-        <div class="form-control">
-          <label for="x_initial">initial x:</label>
-          <input type="text" id="x_initial" name="x_initial">
-          <label for="y_initial">initial y:</label>
-          <input type="text" id="y_initial" name="y_initial">
-        </div>
-        <div class="form-control">
-          <label for="delta_t">delta x:</label>
-          <input type="text" id="delta_t" name="delta_t">
-          <label for="t_final">final t:</label>
-          <input type="text" id="t_final" name="t_final">
-        </div>
+      <div>
+        <form id="form">
+          <div class="form-control">
+            <label for="dxdt">dx/dt:</label>
+            <input type="text" id="dxdt" name="dxdt">
+            <label for="dydt">dy/dt:</label>
+            <input type="text" id="dydt" name="dydt">
+          </div>
+          <div class="form-control">
+            <label for="x_initial">initial x:</label>
+            <input type="text" id="x_initial" name="x_initial">
+            <label for="y_initial">initial y:</label>
+            <input type="text" id="y_initial" name="y_initial">
+          </div>
+          <div class="form-control">
+            <label for="delta_t">delta x:</label>
+            <input type="text" id="delta_t" name="delta_t">
+            <label for="t_final">final t:</label>
+            <input type="text" id="t_final" name="t_final">
+          </div>
+        </form>
         
-        <button class="btn" type="submit">Calculate</button>
-      </form>
-    </div>
-	</main>
-	<footer>
-	    <a href="https://github.com/jason136/dover" target="a">Source</a> |
-	</footer>
-    </body>
+        <button class="btn" id="euler">Euler</button>
+        <button class="btn" id="rk">Runge-Kutta</button>
+      </div>
+
+      <center>
+        <div>
+          <button class="btn" id="in">Zoom In</button>
+          <button class="btn" id="out">Zoom Out</button>
+          <button class="btn" id="left">Left</button>
+          <button class="btn" id="right">Right</button>
+          <button class="btn" id="up">Up</button>
+          <button class="btn" id="down">Down</button>
+          <button class="btn" id="stretchX">Stretch X</button>
+          <button class="btn" id="stretchY">Stretch Y</button>
+          <button class="btn" id="shrinkX">Shrink X</button>
+          <button class="btn" id="shrinkY">Shrink Y</button>
+        </div>
+        <canvas id="canvas" width="600" height="400"></canvas>
+      </center>
+    </main>
+    <footer>
+        <a href="https://github.com/jason136/dover" target="a">Source</a> |
+    </footer>
+  </body>
 </html>
