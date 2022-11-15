@@ -59,6 +59,13 @@ impl Chart {
         self.y_min = self.y_min - height * bottom;
     }
 
+    pub fn get_points(&self) -> Vec<f64> {
+        self.points.iter().flat_map(|p| 
+            std::iter::once(p.0)
+            .chain(std::iter::once(p.1))
+            .chain(std::iter::once(p.2))).collect()
+    }
+
     pub fn generate_bounds(&mut self) {
         let t_values: Vec<f64> = self.points.iter().cloned().map(|p| p.0).collect();
         let x_values = self.points.iter().cloned().map(|p| p.1);
@@ -84,7 +91,11 @@ impl Chart {
         self.y_min = f64::min(x_min, y_min);
     }
 
-    pub fn draw(&self) -> Result<(), JsError> {        
+    pub fn draw(&self) -> Result<(), JsError> {  
+        if self.points.len() == 0 {
+            return Ok(())
+        }
+        
         let backend = CanvasBackend::with_canvas_object(self.canvas.clone()).unwrap();
         let root = backend.into_drawing_area();
         root.fill(&WHITE)?;
@@ -130,20 +141,11 @@ pub fn euler(
 
     for _i in 0..(t_final / delta_t) as u32 {
         t = t + delta_t;
-        let mut x_next = x + f1(x, y) * delta_t;
-        let mut y_next = y + f2(x, y) * delta_t;
+        let x_next = x + f1(x, y) * delta_t;
+        let y_next = y + f2(x, y) * delta_t;
 
-        if x_next == f64::NEG_INFINITY {
-            x_next = f64::MIN;
-        }
-        else if x_next == f64::INFINITY {
-            x_next = f64::MAX;
-        }
-        if y_next == f64::NEG_INFINITY {
-            y_next = f64::MIN;
-        }
-        else if y_next == f64::INFINITY {
-            y_next = f64::MAX;
+        if !(x_next.is_finite() && y_next.is_finite()) {
+            break;
         }
 
         points.push((t, x_next, y_next));
@@ -187,20 +189,11 @@ pub fn runge_kutta(
         let xk4 = f1(x + delta_t * xk3, y + delta_t * yk3);
         let yk4 = f2(x + delta_t * xk3, y + delta_t * yk3);
 
-        let mut x_next = x + delta_t / 6.0 * (xk1 + 2.0 * xk2 + 2.0 * xk3 + xk4);
-        let mut y_next = y + delta_t / 6.0 * (yk1 + 2.0 * yk2 + 2.0 * yk3 + yk4);
+        let x_next = x + delta_t / 6.0 * (xk1 + 2.0 * xk2 + 2.0 * xk3 + xk4);
+        let y_next = y + delta_t / 6.0 * (yk1 + 2.0 * yk2 + 2.0 * yk3 + yk4);
 
-        if x_next == f64::NEG_INFINITY {
-            x_next = f64::MIN;
-        }
-        else if x_next == f64::INFINITY {
-            x_next = f64::MAX;
-        }
-        if y_next == f64::NEG_INFINITY {
-            y_next = f64::MIN;
-        }
-        else if y_next == f64::INFINITY {
-            y_next = f64::MAX;
+        if !(x_next.is_finite() && y_next.is_finite()) {
+            break;
         }
 
         points.push((t, x_next, y_next));
