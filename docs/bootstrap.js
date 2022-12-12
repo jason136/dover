@@ -61,23 +61,11 @@
 /******/ 					"__wbindgen_object_clone_ref": function(p0i32) {
 /******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbindgen_object_clone_ref"](p0i32);
 /******/ 					},
-/******/ 					"__wbg_getContext_4d5e97892c1b206a": function(p0i32,p1i32,p2i32) {
-/******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbg_getContext_4d5e97892c1b206a"](p0i32,p1i32,p2i32);
-/******/ 					},
-/******/ 					"__wbg_instanceof_CanvasRenderingContext2d_ff80c06d296e3622": function(p0i32) {
-/******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbg_instanceof_CanvasRenderingContext2d_ff80c06d296e3622"](p0i32);
-/******/ 					},
-/******/ 					"__wbg_width_2f4b0cbbf1c850d9": function(p0i32) {
-/******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbg_width_2f4b0cbbf1c850d9"](p0i32);
-/******/ 					},
 /******/ 					"__wbg_height_a81d308a000d91d0": function(p0i32) {
 /******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbg_height_a81d308a000d91d0"](p0i32);
 /******/ 					},
-/******/ 					"__wbg_setfillStyle_53ccf2a9886c1c4d": function(p0i32,p1i32) {
-/******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbg_setfillStyle_53ccf2a9886c1c4d"](p0i32,p1i32);
-/******/ 					},
-/******/ 					"__wbg_fillRect_c7a19e13c5242507": function(p0i32,p1f64,p2f64,p3f64,p4f64) {
-/******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbg_fillRect_c7a19e13c5242507"](p0i32,p1f64,p2f64,p3f64,p4f64);
+/******/ 					"__wbg_width_2f4b0cbbf1c850d9": function(p0i32) {
+/******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbg_width_2f4b0cbbf1c850d9"](p0i32);
 /******/ 					},
 /******/ 					"__wbg_beginPath_4e91b7092d0d33d9": function(p0i32) {
 /******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbg_beginPath_4e91b7092d0d33d9"](p0i32);
@@ -96,6 +84,12 @@
 /******/ 					},
 /******/ 					"__wbindgen_error_new": function(p0i32,p1i32) {
 /******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbindgen_error_new"](p0i32,p1i32);
+/******/ 					},
+/******/ 					"__wbg_setfillStyle_53ccf2a9886c1c4d": function(p0i32,p1i32) {
+/******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbg_setfillStyle_53ccf2a9886c1c4d"](p0i32,p1i32);
+/******/ 					},
+/******/ 					"__wbg_fillRect_c7a19e13c5242507": function(p0i32,p1f64,p2f64,p3f64,p4f64) {
+/******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbg_fillRect_c7a19e13c5242507"](p0i32,p1f64,p2f64,p3f64,p4f64);
 /******/ 					},
 /******/ 					"__wbg_instanceof_Window_acc97ff9f5d2c7b4": function(p0i32) {
 /******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbg_instanceof_Window_acc97ff9f5d2c7b4"](p0i32);
@@ -186,6 +180,12 @@
 /******/ 					},
 /******/ 					"__wbindgen_string_get": function(p0i32,p1i32) {
 /******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbindgen_string_get"](p0i32,p1i32);
+/******/ 					},
+/******/ 					"__wbg_getContext_4d5e97892c1b206a": function(p0i32,p1i32,p2i32) {
+/******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbg_getContext_4d5e97892c1b206a"](p0i32,p1i32,p2i32);
+/******/ 					},
+/******/ 					"__wbg_instanceof_CanvasRenderingContext2d_ff80c06d296e3622": function(p0i32) {
+/******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbg_instanceof_CanvasRenderingContext2d_ff80c06d296e3622"](p0i32);
 /******/ 					},
 /******/ 					"__wbindgen_string_new": function(p0i32,p1i32) {
 /******/ 						return installedModules["../pkg/dover_bg.js"].exports["__wbindgen_string_new"](p0i32,p1i32);
@@ -294,7 +294,7 @@
 /******/ 				promises.push(installedWasmModuleData);
 /******/ 			else {
 /******/ 				var importObject = wasmImportObjects[wasmModuleId]();
-/******/ 				var req = fetch(__webpack_require__.p + "" + {"../pkg/dover_bg.wasm":"83ed675c29ca222c297e"}[wasmModuleId] + ".module.wasm");
+/******/ 				var req = fetch(__webpack_require__.p + "" + {"../pkg/dover_bg.wasm":"2b56e2b5965d6dc9f8d0"}[wasmModuleId] + ".module.wasm");
 /******/ 				var promise;
 /******/ 				if(importObject instanceof Promise && typeof WebAssembly.compileStreaming === 'function') {
 /******/ 					promise = Promise.all([WebAssembly.compileStreaming(req), importObject]).then(function(items) {
@@ -395,7 +395,7 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("init();\r\n\r\nasync function init() {\r\n    const [{Chart, euler, runge_kutta}, {main, setup}] = await Promise.all([\r\n        __webpack_require__.e(/*! import() */ 0).then(__webpack_require__.bind(null, /*! ../pkg/dover.js */ \"../pkg/dover.js\")),\r\n        __webpack_require__.e(/*! import() */ 1).then(__webpack_require__.bind(null, /*! ./index.js */ \"./index.js\")),\r\n    ]);\r\n\r\n    setup(Chart, euler, runge_kutta);\r\n    main();\r\n}\n\n//# sourceURL=webpack:///./bootstrap.js?");
+eval("init();\r\n\r\nasync function init() {\r\n    const [{Chart}, {main, setup}] = await Promise.all([\r\n        __webpack_require__.e(/*! import() */ 0).then(__webpack_require__.bind(null, /*! ../pkg/dover.js */ \"../pkg/dover.js\")),\r\n        __webpack_require__.e(/*! import() */ 1).then(__webpack_require__.bind(null, /*! ./index.js */ \"./index.js\")),\r\n    ]);\r\n\r\n    setup(Chart);\r\n    main();\r\n}\n\n//# sourceURL=webpack:///./bootstrap.js?");
 
 /***/ })
 

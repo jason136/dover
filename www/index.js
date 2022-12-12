@@ -1,7 +1,4 @@
 class Chart {}
-let euler = () => {};
-let runge_kutta = () => {};
-
 const canvas = document.getElementById("canvas");
 const status = document.getElementById("status");
 const error = document.getElementById("error");
@@ -9,127 +6,87 @@ let chart;
 
 const form = document.getElementById('form');
 
-export function setup(WasmChart, WasmEuler, WasmRK) {
+export function setup(WasmChart) {
     Chart = WasmChart;
-    euler = WasmEuler;
-    runge_kutta = WasmRK;
 }
 
 function setupCanvas() {
-    const aspectRatio = canvas.width / canvas.height;
-    const size = canvas.parentNode.offsetWidth * 0.7;
-    canvas.style.width = size + "px";
-    canvas.style.height = size / aspectRatio + "px";
-    canvas.width = size;
-    canvas.height = size / aspectRatio;
-    chart.draw();
-}
-
-function plot(event) {
-    event.preventDefault();
-
-    const formData = new FormData(form);
-    const formDataObj = Object.fromEntries(formData.entries());
-
-    status.innerText = `Rendering...`;
-    const start = performance.now();
-    const expectedLen = formDataObj.t_final / formDataObj.delta_t;
-    let len;
-    
-    if (event.target.id == 'euler') {
-        len = euler(
-            chart, 
-            formDataObj.dxdt, 
-            formDataObj.dydt,
-            formDataObj.x_initial,
-            formDataObj.y_initial,
-            0.0, 
-            formDataObj.delta_t,
-            formDataObj.t_final,
-        );
-    }
-    else if (event.target.id == 'rk') {
-        len = runge_kutta(
-            chart, 
-            formDataObj.dxdt, 
-            formDataObj.dydt,
-            formDataObj.x_initial,
-            formDataObj.y_initial,
-            0.0, 
-            formDataObj.delta_t,
-            formDataObj.t_final,
-        );
-    }
-
-    if (len != expectedLen) {
-        error.innerText = `Error: f64 overflow after ${len} iterations`;
-    }
-    else {
-        error.innerText = '';
-    }
-
-    chart.generate_bounds();
-    chart.draw();
-    const end = performance.now();
-    status.innerText = `Rendered ${len} datapoints in ${Math.ceil(end - start)}ms`;
-    document.getElementById ("download").innerText = `Download (~${len * 50 / 1000000} mb)`;
+    let width = window.innerWidth - 60;
+    let height = window.innerHeight - 100;
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
+    canvas.width = width;
+    canvas.height = height;
+    chart.full_draw();
 }
 
 export function main() {
     chart = Chart.new(canvas);
-    document.getElementById("dxdt").value = "10*x-x*y";
-    document.getElementById("dydt").value = "-1*y+x*y";
-    document.getElementById("x_initial").value = "20";
-    document.getElementById("y_initial").value = "5";
-    document.getElementById("delta_t").value = "0.001";
-    document.getElementById("t_final").value = "50";
+
+    let example_dxdt = "y";
+    let example_dydt = "-x-y";
+    document.getElementById("dxdt").value = example_dxdt;
+    document.getElementById("dydt").value = example_dydt;
+    // document.getElementById("delta_t").value = "0.001";
+    chart.set_equations(example_dxdt, example_dydt)
 
     status.innerText = "WebAssembly loaded!";
     setupCanvas();
     window.addEventListener("resize", setupCanvas);
-
-    document.getElementById ("euler").addEventListener('click', plot);
-    document.getElementById ("rk").addEventListener('click', plot);
     
-    document.getElementById ("in").addEventListener('click', () => {
-        chart.adjust_bounds(-0.1, -0.1, -0.1, -0.1);
-        chart.draw();
-    });
-    document.getElementById ("out").addEventListener('click', () => {
-        chart.adjust_bounds(0.1, 0.1, 0.1, 0.1);
-        chart.draw();
-    });
-    document.getElementById ("left").addEventListener('click', () => {
-        chart.adjust_bounds(0.2, -0.2, 0.0, 0.0);
-        chart.draw();
-    });
-    document.getElementById ("right").addEventListener('click', () => {
-        chart.adjust_bounds(-0.2, 0.2, 0.0, 0.0);
-        chart.draw();
-    });
-    document.getElementById ("up").addEventListener('click', () => {
-        chart.adjust_bounds(0.0, 0.0, 0.2, -0.2);
-        chart.draw();
-    });
-    document.getElementById ("down").addEventListener('click', () => {
-        chart.adjust_bounds(0.0, 0.0, -0.2, 0.2);
-        chart.draw();
-    });
-    document.getElementById ("stretchX").addEventListener('click', () => {
-        chart.adjust_bounds(-0.1, -0.1, 0.0, 0.0);
-        chart.draw();
-    });
-    document.getElementById ("stretchY").addEventListener('click', () => {
-        chart.adjust_bounds(0.0, 0.0, -0.1, -0.1);
-        chart.draw();
-    });
-    document.getElementById ("shrinkX").addEventListener('click', () => {
-        chart.adjust_bounds(0.1, 0.1, 0.0, 0.0);
-        chart.draw();
-    });
-    document.getElementById ("shrinkY").addEventListener('click', () => {
-        chart.adjust_bounds(0.0, 0.0, 0.1, 0.1);
-        chart.draw();
+    let last_mouse_x = null;
+    let last_mouse_y = null;
+    let drag = (e) => {
+        e.preventDefault();
+        if (last_mouse_x !== null) {
+            const dx = e.offsetX - last_mouse_x;
+            const dy = e.offsetY - last_mouse_y;
+            chart.move_offset(-dx, dy);
+            last_mouse_x += dx;
+            last_mouse_y += dy;
+        }
+    };
+
+    let require_full_draw = false;
+    canvas.onmousedown = (e) => {
+        e.preventDefault();
+        
+        if (e.button === 2) {
+            canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+            last_mouse_x = e.offsetX;
+            last_mouse_y = e.offsetY;
+            window.addEventListener('mousemove', drag, true);
+            require_full_draw = true;
+        }
+        if (e.button === 0) {
+            let actualRect = canvas.getBoundingClientRect();
+            let logicX = e.offsetX * canvas.width / actualRect.width;
+            let logicY = e.offsetY * canvas.height / actualRect.height;
+            const mouse_pos = chart.coord(logicX, logicY);
+            chart.add_line(mouse_pos.x, mouse_pos.y);
+        }
+    };
+
+    window.onmouseup = () => {
+        if (require_full_draw) {
+            chart.full_draw();
+            require_full_draw = false;
+        }
+        last_mouse_x = null;
+        last_mouse_y = null;
+        canvas.removeEventListener('contextmenu', (e) => e.preventDefault());
+        window.removeEventListener('mousemove', drag, true);
+    }
+
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+
+      let actualRect = canvas.getBoundingClientRect();
+      let logicX = e.offsetX * canvas.width / actualRect.width;
+      let logicY = e.offsetY * canvas.height / actualRect.height;
+      const mouse_pos = chart.coord(logicX, logicY);
+      chart.zoom((e.deltaY || -e.detail) < 0, mouse_pos.x, mouse_pos.y);
+      error.innerText = `position: ${mouse_pos.x}, ${mouse_pos.y}`;
     });
     
     document.getElementById ("points").addEventListener('click', () => {
@@ -158,6 +115,7 @@ export function main() {
         }
         w.document.write("</table>");
     });
+
     document.getElementById ("download").addEventListener('click', () => {
         const points = Array.from(chart.get_points());
         let csvContent = "data:text/csv;charset=utf-8,";
@@ -177,4 +135,17 @@ export function main() {
         document.body.appendChild(link);
         link.click();
     });
+
+    document.getElementById ("reset").addEventListener('click', () => {
+        chart.clear();
+    });
+
+    function load_functions() {
+        const formData = new FormData(form);
+        const { dxdt, dydt } = Object.fromEntries(formData.entries());
+        let error = chart.set_equations(dxdt, dydt);
+        console.log(error);
+    }
+    document.getElementById ("dxdt").addEventListener('change', (e) => load_functions());
+    document.getElementById ("dydt").addEventListener('change', (e) => load_functions());
 }
